@@ -1,0 +1,30 @@
+<html>
+    <input id="input" type="text" />
+    <div id="span"></div>
+</html>
+<script>
+  // 双向绑定特点：在页面中操作，会改变数据；改变数据，变化会体现在页面中
+  let inputEle = document.getElementById('input')
+  let showEle = document.getElementById('span')
+
+  let obj = {}
+  inputEle.addEventListener('input', (e) => {
+      // 在页面中操作，会改变数据
+      obj.text = e.target.value
+  })
+  Object.defineProperty(obj, 'text', {
+    configurable: true,
+    enumerable: true,
+    get: () => {
+      console.log('get')
+    },
+    set: (newVal) => {
+      // 改变数据，变化会体现在页面中
+      showEle.innerHTML = newVal
+      inputEle.value = newVal
+    }
+  })
+</script>
+
+
+

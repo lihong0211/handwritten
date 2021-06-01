@@ -1,0 +1,30 @@
+<html>
+    <style>
+        img {
+            width: 500px;
+            height: auto;
+        }
+    </style>
+    <body>
+        <ul>
+            <li><img src="" data="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.pconline.com.cn%2Fimages%2Fupload%2Fupc%2Ftx%2Fwallpaper%2F1211%2F02%2Fc0%2F15063016_1351828153948_800x800.png&refer=http%3A%2F%2Fimg.pconline.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1619460580&t=9a303139446a7dd5255476757812e0ac"  alt=""></li>
+          </ul>
+    </body>
+    <script>
+        // 提前执行，初始化 resize 事件不会执行
+        setRem()
+        // 原始配置
+            function setRem () {
+            let doc = document.documentElement
+            let width = doc.getBoundingClientRect().width
+            let rem = width / 75
+            doc.style.fontSize = rem + 'px'
+        }
+        // 监听窗口变化
+        addEventListener("resize", setRem)
+    </script>
+</html>
+
+
+
+
