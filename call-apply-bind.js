@@ -1,50 +1,52 @@
-/**
- * 手写call函数
- * @param {*} ctx 
- */
-// 在Function.prototype上修改
 Function.prototype.myCall = function () {
-    let result
-    const args = [...arguments]
-    const ctx = args.shift()
-
-    // 绑定this
-    ctx.fn = this
-    // 执行fn，带上参数  fn执行的时候 fn的this是只想ctx的  也就相当于改变了this指向到ctx上了
-    result = ctx.fn(...args)
-    // 删除fn
-    delete ctx.fn
-    // 返回结果
-    return result
+  const args = [...arguments]
+  const ctx = args.shift()
+  ctx.fn = this
+  const result = ctx.fn(...args)
+  delete ctx.fn
+  return result
 }
 
-/**
- * 手写apply函数
- * @param {*} ctx 
- */
+var test = {
+  name: 'lihong'
+}
+
+function b () {
+  console.log(this)
+  console.log(this.name)
+}
+
+b.myCall(test)
+
+
 Function.prototype.myApply = function () {
-    let result
-    const args = [...arguments]
-    const ctx = args.shift()
-    ctx.fn = this
-    // 这里与call的区别知识参数的不一样
-    result = ctx.fn([...args])
-    delete ctx.fn
-  
-    return result
+  const args = [...arguments]
+  const ctx = args.shift()
+  ctx.fn = this
+  const result = ctx.fn(args)
+  delete ctx.fn
+  return result
 }
 
 
-/**
- * 手写bind函数
- * @param {*}  
- */
 Function.prototype.myBind = function () {
-    const args = [...arguments]
-    const ctx = args.shift()
-    const _this = this
+  const args = [...arguments] // 绑定函数时的参数
+  const ctx = args.shift()
+  const _this = this
 
-    return function () {
-        return _this.apply(ctx, args.concat([...arguments]))
-    }
+  return function () {
+      console.log(this) // 返回的函数的执行上下文
+      console.log(_this) // f b() {}
+      return _this.apply(ctx, args.concat([...arguments])) // 返回的函数执行时的参数
+  }
 }
+
+var test = {
+  name: 'lihong'
+}
+
+function b () {
+  console.log(this.name)
+}
+
+b.myBind(test, 1, 2, 3)(4, 5)
