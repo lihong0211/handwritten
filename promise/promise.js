@@ -53,18 +53,18 @@ class Promise {
     }
 
     // 2.3.2
-    if (x instanceof Promise) {
-      if (x === promise) reject(new TypeError('123'))
+    // if (promise === x) {
+    //   // if (x === promise) reject(new TypeError('123'))
 
-      x.then(
-        value => {
-          this.processor(promise, value, resolve, reject)
-        }, 
-        reason => {
-          reject(reason)
-        }
-      )
-    }
+    //   x.then(
+    //     value => {
+    //       this.processor(promise, value, resolve, reject)
+    //     }, 
+    //     reason => {
+    //       reject(reason)
+    //     }
+    //   )
+    // }
 
     // 2.3.3
     if (isObject(x) || isFunction(x)) {
@@ -142,126 +142,126 @@ class Promise {
     }) 
   }
 
-  catch(callback) {
-    return this.then(null, callback)
-  }
+  // catch(callback) {
+  //   return this.then(null, callback)
+  // }
 
-  finally(callback) {
-    return this.then(
-      value => {
-        callback()
-        return value
-      },
-      err => {
-        callback()
-        throw err
-      }
-    )
-  }
+  // finally(callback) {
+  //   return this.then(
+  //     value => {
+  //       callback()
+  //       return value
+  //     },
+  //     err => {
+  //       callback()
+  //       throw err
+  //     }
+  //   )
+  // }
 
-  static resolve(value) {
-    return value instanceof Promise
-    ? value
-    : new Promise(resolve => resolve(value))
-  }
+  // static resolve(value) {
+  //   return value instanceof Promise
+  //   ? value
+  //   : new Promise(resolve => resolve(value))
+  // }
 
-  static reject(reason) {
-    return new Promise(reject => reject(reason))
-  }
+  // static reject(reason) {
+  //   return new Promise(reject => reject(reason))
+  // }
 
-  /**
-   * Promise.all可以将多个Promise实例包装成一个新的Promise实例。
-   * 同时，成功和失败的返回值是不同的，成功的时候返回的是一个结果数组，
-   * 而失败的时候则返回最先被reject失败状态的值。
-   * @param {*} promises 
-   */
-  static all(promises) {
-    return new Promise((resolve, reject) => {
-      if (!promises.length) {
-        resolve([])
-      }
-      const result = []
-      const resolvedPromise = 0
-      for (let i = 0, l = promises.length; i < l; i++) {
-        Promise.resolve(promises[i]).then(
-          value => {
-            result[i] = value
-            if (++resolvedPromise === l) {
-              resolve[result]
-            }
-          },
-          err => {
-            reject(err)
-          }
-        )
-      }
-    })
-  }
+  // /**
+  //  * Promise.all可以将多个Promise实例包装成一个新的Promise实例。
+  //  * 同时，成功和失败的返回值是不同的，成功的时候返回的是一个结果数组，
+  //  * 而失败的时候则返回最先被reject失败状态的值。
+  //  * @param {*} promises 
+  //  */
+  // static all(promises) {
+  //   return new Promise((resolve, reject) => {
+  //     if (!promises.length) {
+  //       resolve([])
+  //     }
+  //     const result = []
+  //     const resolvedPromise = 0
+  //     for (let i = 0, l = promises.length; i < l; i++) {
+  //       Promise.resolve(promises[i]).then(
+  //         value => {
+  //           result[i] = value
+  //           if (++resolvedPromise === l) {
+  //             resolve[result]
+  //           }
+  //         },
+  //         err => {
+  //           reject(err)
+  //         }
+  //       )
+  //     }
+  //   })
+  // }
 
-  /**
-   * 顾名思义，Promse.race就是赛跑的意思，意思就是说，
-   * Promise.race([p1, p2, p3])里面哪个结果获得的快，
-   * 就返回那个结果，不管结果本身是成功状态还是失败状态。
-   */
-  static race(promises) {
-    return new Promise((resolve, reject) => {
-      promises.forEach(promise => {
-        Promise.resolve(promise).then(resolve, reject)
-      })
-    })
-  }
+  // /**
+  //  * 顾名思义，Promse.race就是赛跑的意思，意思就是说，
+  //  * Promise.race([p1, p2, p3])里面哪个结果获得的快，
+  //  * 就返回那个结果，不管结果本身是成功状态还是失败状态。
+  //  */
+  // static race(promises) {
+  //   return new Promise((resolve, reject) => {
+  //     promises.forEach(promise => {
+  //       Promise.resolve(promise).then(resolve, reject)
+  //     })
+  //   })
+  // }
 
-  /**
-   * 等到所有promises都已敲定（settled）（每个promise都已兑现（fulfilled）或已拒绝（rejected））。
-   * 返回一个promise，该promise在所有promise完成后完成。并带有一个对象数组，每个对象对应每个promise的结果。
-   * @param {*} promises 
-   */
-  static allSettled(promises) {
-    return new Promise((resolve, reject) => {
-      if (!promises.length) {
-        resolve([])
-      }
-      const result = []
-      let resolvedPromise = 0
-      for (let i = 0, l = promises.length; i < l; i++) {
-        Promise.resolve(promises[i]).then(
-          value => {
-            result[i] = {
-              state: FULFILLED_STATE,
-              value
-            }
-            if (++resolvedPromise === l) {
-              resolve(result)
-            }
-          },
-          err => {
-            result[i] = {
-              state: REJECTED_STATE,
-              reason: err
-            }
-            if (++resolvedPromise === l) {
-              resolve(result)
-            }
-          }
-        )
-      }
-    })
-  }
+  // /**
+  //  * 等到所有promises都已敲定（settled）（每个promise都已兑现（fulfilled）或已拒绝（rejected））。
+  //  * 返回一个promise，该promise在所有promise完成后完成。并带有一个对象数组，每个对象对应每个promise的结果。
+  //  * @param {*} promises 
+  //  */
+  // static allSettled(promises) {
+  //   return new Promise((resolve, reject) => {
+  //     if (!promises.length) {
+  //       resolve([])
+  //     }
+  //     const result = []
+  //     let resolvedPromise = 0
+  //     for (let i = 0, l = promises.length; i < l; i++) {
+  //       Promise.resolve(promises[i]).then(
+  //         value => {
+  //           result[i] = {
+  //             state: FULFILLED_STATE,
+  //             value
+  //           }
+  //           if (++resolvedPromise === l) {
+  //             resolve(result)
+  //           }
+  //         },
+  //         err => {
+  //           result[i] = {
+  //             state: REJECTED_STATE,
+  //             reason: err
+  //           }
+  //           if (++resolvedPromise === l) {
+  //             resolve(result)
+  //           }
+  //         }
+  //       )
+  //     }
+  //   })
+  // }
 
-  static any(promises) {
-    return new Promise((resolve, reject) => {
-      if (!promises.length) {
-        resolve()
-      }
-      for (let i = 0, l = promises.length; i < l; i++) {
-        Promise.resolve(promises[i]).then(
-          value => {
-            resolve(value)
-          }
-        )
-      }
-    }) 
-  }
+  // static any(promises) {
+  //   return new Promise((resolve, reject) => {
+  //     if (!promises.length) {
+  //       resolve()
+  //     }
+  //     for (let i = 0, l = promises.length; i < l; i++) {
+  //       Promise.resolve(promises[i]).then(
+  //         value => {
+  //           resolve(value)
+  //         }
+  //       )
+  //     }
+  //   }) 
+  // }
 }
 
 Promise.defer = Promise.deferred = function(){

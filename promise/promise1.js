@@ -45,7 +45,7 @@ class Promise {
     }
   }
 
-  resolutionProcedure (promise, x, resolve, reject) {
+  processor (promise, x, resolve, reject) {
     if (promise === x) {
       reject(new TypeError('123'))
     }
@@ -55,7 +55,7 @@ class Promise {
       
       x.then(
         value => {
-          this.resolutionProcedure(promise, value, resolve, reject)
+          this.processor(promise, value, resolve, reject)
         },
         reason => {
           reject(reason)
@@ -74,7 +74,7 @@ class Promise {
             y => {
               if (called) return
               called = true
-              this.resolutionProcedure(promise, y, resolve, reject)
+              this.processor(promise, y, resolve, reject)
             },
             r => {
               if (called) return
@@ -106,7 +106,7 @@ class Promise {
         setTimeout(() => {
           try {
             const x = onFulfilled(this.value)
-            this.resolutionProcedure(this, x, resolve, reject)
+            this.processor(this, x, resolve, reject)
           } catch (err) {
             reject(err)
           }
@@ -116,7 +116,7 @@ class Promise {
         setTimeout(() => {
           try {
             const x = onRejected(this.reason)
-            this.resolutionProcedure(this, x, resolve, reject)
+            this.processor(this, x, resolve, reject)
           } catch (err) {
             reject(err)
           }
@@ -133,32 +133,32 @@ class Promise {
     })
   }
 
-  catch (callback) {
-    return this.then(null, callback)
-  }
+  // catch (callback) {
+  //   return this.then(null, callback)
+  // }
 
-  finally () {
-    return this.then(
-      value => {
-        callback()
-        return value
-      },
-      err => {
-        callback()
-        throw err
-      }
-    )
-  }
+  // finally () {
+  //   return this.then(
+  //     value => {
+  //       callback()
+  //       return value
+  //     },
+  //     err => {
+  //       callback()
+  //       throw err
+  //     }
+  //   )
+  // }
 
-  static resolve(value) {
-    return value instanceof Promise
-    ? value
-    : new Promise(resolve => resolve(value))
-  }
+  // static resolve(value) {
+  //   return value instanceof Promise
+  //   ? value
+  //   : new Promise(resolve => resolve(value))
+  // }
 
-  static reject(reason) {
-    return new Promise(reject => reject(reason))
-  }
+  // static reject(reason) {
+  //   return new Promise(reject => reject(reason))
+  // }
 
   static all (promises) {
 
