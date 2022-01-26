@@ -142,28 +142,32 @@ class Promise {
     }) 
   }
 
-  // catch(callback) {
-  //   return this.then(null, callback)
-  // }
+  catch(callback) {
+    return this.then(null, callback)
+  }
 
-  // finally(callback) {
-  //   return this.then(
-  //     value => {
-  //       callback()
-  //       return value
-  //     },
-  //     err => {
-  //       callback()
-  //       throw err
-  //     }
-  //   )
-  // }
+  // 始终执行cb 不论promise成功或者失败
+  finally(callback) {
+    return this.then(
+      value => {
+        callback()
+        return value
+      },
+      err => {
+        callback()
+        throw err
+      }
+    )
+  }
 
-  // static resolve(value) {
-  //   return value instanceof Promise
-  //   ? value
-  //   : new Promise(resolve => resolve(value))
-  // }
+  // Promise.resolve()用于将现有对象转换为Promise对象，从而控制异步流程。
+  // 而立即resolve的Promise对象是在本轮“事件循环”（Event loop）的结束时，而不是在下一轮“事件循环”的开始时。
+
+  static resolve(value) {
+    return value instanceof Promise
+    ? value
+    : new Promise(resolve => resolve(value))
+  }
 
   // static reject(reason) {
   //   return new Promise(reject => reject(reason))
