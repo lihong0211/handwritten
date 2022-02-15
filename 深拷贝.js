@@ -57,8 +57,8 @@ function deepClone (obj, map = new WeakMap()) {
         clone.set(k, deepClone(v, map))
       })
       return clone
-    case 'Function': 
-      return new Function('return '+obj.toString()).call(this) // 只能在localhost 执行 否则会报错
+    // case 'Function': 
+    //   return new Function('return '+obj.toString()).call(this) // 只能在localhost 执行 否则会报错
     default:
       return obj
   }

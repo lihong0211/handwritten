@@ -13,7 +13,7 @@ function uniq (arr) {
 }
 
 function uniq (arr) {
-  return arr.filter ((item, index, array) => {
+  return arr.filter((item, index, array) => {
     return index === array.indexOf(item)
   }) 
 }

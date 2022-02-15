@@ -9,6 +9,36 @@ function debounce (fn, delay) {
   }
 }
 
+function debounce (fn, delay, immediate) {
+  let timer, result
+
+  const debounced = function () {
+    const ctx = this
+    const args = arguments
+    if (timer) clearTimeout(timer)
+    if (immediate) {
+      if (!timer) {
+        result = fn.apply(ctx, args)
+      }
+      timer = setTimeout(() => {
+        timer = null
+      }, delay)
+    } else {
+      timer = setTimeout(() => {
+        result = fn.apply(ctx, args)
+      }, delay)
+    }
+    return result
+  }
+
+  debounced.cancel = function () {
+    clearTimeout(timer)
+    timer = null
+  }
+
+  return debounced
+}
+
 function throttle (fn, delay) {
   let canRun = true
   return function () {
