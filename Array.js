@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-function checkType (name) {
+function checkType (name, cb) {
   if (this === null || this === undefined) {
     throw new TypeError(`Cannot read properties of ${this} (reading '${name}')`)
   }
@@ -9,7 +9,7 @@ function checkType (name) {
   }
 }
 Array.prototype.forEach = function (cb) {
-  checkType('forEach')
+  checkType('forEach', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -21,7 +21,7 @@ Array.prototype.forEach = function (cb) {
 
 
 Array.prototype.map = function (cb) {
-  checkType('map')
+  checkType('map', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -35,7 +35,7 @@ Array.prototype.map = function (cb) {
 }
 
 Array.prototype.reduce = function (cb) {
-  checkType('reduce')
+  checkType('reduce', cb)
 
   const arr = this
   const len = arr.length
@@ -57,7 +57,7 @@ Array.prototype.reduce = function (cb) {
 }
 
 Array.prototype.filter = function (cb) {
-  checkType('filter')
+  checkType('filter', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -72,7 +72,7 @@ Array.prototype.filter = function (cb) {
 }
 
 Array.prototype.some = function (cb) {
-  checkType('some')
+  checkType('some', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -87,7 +87,7 @@ Array.prototype.some = function (cb) {
 }
 
 Array.prototype.every = function (cb) {
-  checkType('every')
+  checkType('every', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -102,7 +102,7 @@ Array.prototype.every = function (cb) {
 }
 
 Array.prototype.find = function (cb) {
-  checkType('find')
+  checkType('find', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -116,7 +116,7 @@ Array.prototype.find = function (cb) {
 }
 
 Array.prototype.findIndex = function (cb) {
-  checkType('findIndex')
+  checkType('findIndex', cb)
 
   const arr = this
   const len = arr.length || 0
@@ -141,14 +141,15 @@ Array.prototype.indexOf = function (val) {
 
 const a = [1, 2, 3]
 a.forEach((item, index, array) => {
-  array[index] = item * 2
+  array[index] = item + 1
 })
+console.log(a)
 console.log('map', a.map(item => item * 2))
-console.log('filter', a.filter(item => item > 1))
-console.log('some', a.some(item => item > 4))
-console.log('every', a.every(item => item > 4))
-console.log('find', a.find(item => item > 10))
-console.log('findIndex', a.findIndex(item => item > 10))
+console.log('filter', a.filter(item => item > 2))
+console.log('some', a.some(item => item > 3))
+console.log('every', a.every(item => item > 1))
+console.log('find', a.find(item => item > 3))
+console.log('findIndex', a.findIndex(item => item > 3))
 
 reduce = a.reduce((item, index, array) => {
   return item * array[index]
