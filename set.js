@@ -46,7 +46,7 @@ class Set {
       while(!orderHash.hasOwnProperty(entiesOrder) && entiesOrder <= order) {
         entiesOrder++
       }
-      if (++count < size + 1) {
+      if (++count <= size + 1) {
         const item = orderHash[entiesOrder]
         entiesOrder++
         return {
@@ -75,7 +75,7 @@ class Set {
       while(!orderHash.hasOwnProperty(valuesOrder) && valuesOrder <= order) {
         valuesOrder++
       }
-      if (++count < size + 1) {
+      if (++count <= size + 1) {
         const item = orderHash[valuesOrder]
         valuesOrder++
         return {
