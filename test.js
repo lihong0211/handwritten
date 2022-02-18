@@ -1,31 +1,48 @@
-function add () {
-  let args = [...arguments]
-  return function curring () {
-    if (!arguments.length) {
-      return args.reduce((res, cur) => res + cur)
+class EventBus {
+  constructor () {
+    this.pool = {}
+  }
+
+  $on () {
+    const [name, cb] = [...arguments]
+    if (name in this.pool) {
+      this.pool[name].push(cb)
     } else {
-      args.push(...arguments)
-      return curring
+      this.pool[name] = [cb]
+    }
+  }
+
+  $emit () {
+    const [name, once, ...args] = [...arguments]
+    if (name in this.pool) {
+      this.pool[name].slice().forEach(cb => {
+        cb(...args)
+      })
+    }
+    if (once) {
+      delete this.pool[name]
+    }
+  }
+
+  $destroy () {
+    const [name, fn] = [...arguments]
+    if (fn) {
+      this.pool[name] = this.pool[name].filter(cb => cb !== fn)
+    } else {
+      delete this.pool[name]
     }
   }
 }
 
-add(1)(2, 3)(4)(5)()
-
-function curring (fn) {
-  const args = [].slice.call(arguments, 1)
-  return function _fn () {
-    if (!arguments.length) {
-      return fn.apply(this, args)
-    } else {
-      args.push(...arguments)
-      return _fn
-    }
-  }
+const eventBus = new EventBus()
+const fn1 = function (name, age) {
+  console.log(`${name} ${age}`)
 }
-
-function add () {
-  return [].reduce.call(arguments, (res, cur) => res + cur)
+const fn2 = function (name, age) {
+  console.log(`hello, ${name} ${age}`)
 }
-
-curring(add, 1)(2, 3)(4)(5)()
+eventBus.$on('aaa', fn1)
+eventBus.$on('aaa', fn2)
+eventBus.$emit('aaa', false, '布兰', 12)
+eventBus.$destroy('aaa', fn1)
+// eventBus.$emit('aaa', true, '布兰', 12)

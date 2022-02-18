@@ -1,11 +1,14 @@
-const img = document.getElementById('test')
-
 function lazy () {
-  const rect = img.getBoundingClientRect()
-  if (rect.left < window.innerWidth && rect.right > 0 && rect.top < window.innerHeight && rect.bottom > 0) {
-    img.src = img.getAttribute('data-src')
-    window.removeEventListener('scroll')
-  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(item => {
+      if (item.isIntersecting) {
+        item.target.src = item.target.dataset.src
+        io.unobserve(item.target)
+      }
+    })
+  })
+  const imgs = querySelectorAll('[data-src]')
+  imgs.forEach(item => {
+    io.observe(item)
+  })
 }
-
-window.onscroll = lazy

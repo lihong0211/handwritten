@@ -1,0 +1,34 @@
+<html>
+  <style>
+    img {
+      width: 1000px;
+      height: 700px;
+    }
+  </style>
+  <body>
+    <img data-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202007%2F01%2F20200701042456_x58hK.jpeg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1647762481&t=db1e308b80d6173abbf1a8f6236893e4" alt="">
+    <img data-src="https://t7.baidu.com/it/u=4162611394,4275913936&fm=193&f=GIF" alt="">
+    <img data-src="https://t7.baidu.com/it/u=1951548898,3927145&fm=193&f=GIF" alt="">
+    <img data-src="https://t7.baidu.com/it/u=2582370511,530426427&fm=193&f=GIF" alt="">
+    <img data-src="https://t7.baidu.com/it/u=4069854689,43753836&fm=193&f=GIF" alt="">
+    <img data-src="https://t7.baidu.com/it/u=3919052749,3204254734&fm=193&f=GIF" alt="">
+  </body>
+</html>
+<script>
+  function lazy() {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(item => {
+        console.log(item)
+        if (item.isIntersecting) {
+          item.target.src = item.target.dataset.src
+          io.unobserve(item.target)
+        }
+      })
+    })
+    const imgs = document.querySelectorAll('[data-src]')
+    imgs.forEach(item => {
+      io.observe(item)
+    })
+  }
+  lazy()
+</script>
