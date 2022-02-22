@@ -73,21 +73,22 @@ function inherit (son, father) {
   prototype.constructor = son
 }
 
-function SuperType () {
-  this.name = 'test'
+function SuperType (age) {
+  this.name = 'super'
+  this.age = age
+}
+
+function SubType (age) {
+  SuperType.call(this, age)
+  this.sex = 'man'
 }
 
 SuperType.prototype.sayName = function () {
   console.log(this.name)
 }
 
-function SubType (age) {
-  SuperType.call(this)
-  this.age = age
-}
-
 inherit(SubType, SuperType)
-// 这里必须要在inherit之后
+
 SubType.prototype.sayAge = function () {
   console.log(this.age)
 }
