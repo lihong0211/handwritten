@@ -15,22 +15,15 @@
 
 
 function _new () {
-  const obj = {}
   const args = [...arguments]
   const Ctor = args.shift()
-  obj.__proto__ = Ctor.prototype // 保证Ctor原型上的方法可用
+  // 两种方式继承原型
+  // const obj = {}
+  // Object.setPrototypeOf(obj, Ctor.prototype)
+   const obj = Object.create(Ctor.prototype)
 
-  const result = Ctor.apply(obj, args)
-  return result &&  typeof result === 'object' ? result : obj
-}
-
-function _new () {
-  const args = [...arguments]
-  const Ctor = args.shift()
-  const obj = Object.create(Ctor.prototype)
-
-  const result = Ctor.apply(obj, args)
-  return result && typeof result === 'object' ? result : obj
+   const res = Ctor.apply(obj, args)
+  return res && typeof res === 'object' ? res : obj
 }
 
 function People () {
@@ -39,28 +32,38 @@ function People () {
 const people = _new(People)
 
 Object._create = function () {
-  const obj = [...arguments].shift()
+  const obj = [...arguments][0]
   const Ctor = function() {}
   Ctor.prototype = obj
   return new Ctor()
+}
+
+Object._create = function () {
+  const obj = [...arguments][0]
+  const res = {}
+  Object.setPrototypeOf(res, obj)
+  return res
 }
 
 const test = Object._create({name: 1})
 console.log(test.__proto__)
 
 
-/**
-* instanceof  实现原理
-* @param {*} left 
-* @param {*} right 
-*/
-function _instanceof (left, right) {
-  if (!right) return false
-  while(left) {
-    if (left.__proto__ === right.prototype) {
-      return true
-    }
-    left = left.__proto__
+function _instanceof () {
+  let [obj, Ctor] = [...arguments]
+  if (!Ctor) return false
+  while (obj) {
+    if (obj.__proto__ === Ctor.prototype) return true
+    obj = obj.__proto__
   }
   return false
-  }
+}
+
+function Animal (name) {
+  this.name = name
+}
+
+const dog = new Animal("dog");
+console.log(_instanceof(dog, Array));
+console.log(_instanceof(dog, Animal));
+console.log(_instanceof(dog, Object));

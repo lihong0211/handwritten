@@ -1,117 +1,95 @@
-/**
- * 原型链继承
- * 
- */
-function People() {
-    this.organs = ['head', 'body', 'hand', 'foot']
-}
-People.prototype.write = function() {
-    console.log(this.organs)
-}
-function Person() {}
-// 将父类的实例赋值给子类的原型
-Person.prototype =  new People()
-
-
-/**
- * 借用构造函数继承
- * 
- */
-function People() {
-    this.organs = ['head', 'body', 'hand', 'foot']
-}
-function Person(age) {
-    People.call(this)
-    this.age = age
+// 原型链继承
+function SuperType () {
+  this.name = 'test'
 }
 
-
-/**
- * 组合继承
- * 
- */
-function People() {
-    this.organs = ['head', 'body', 'hand', 'foot']
+SuperType.prototype.sayName = function () {
+  console.log(this.name)
 }
-People.prototype.write = function() {
-    console.log(this.organs)
+
+function SubType () {}
+
+SubType.prototype = new SuperType()
+
+// 借用构造函数继承
+function SuperType () {
+  this.name = 'test'
 }
-// 继承属性
-function Person(age) {
-    People.call(this)
-    this.age = age
+
+function SubType (age) {
+  SuperType.call(this)
+  this.age = age
 }
-// 继承方法
-Person.prototype = new People()
 
+// 组合式继承
+function SuperType () {
+  this.name = 'test'
+}
 
-/**
- * 原型式继承
- * 
- */
+SuperType.prototype.sayName = function () {
+  console.log(this.name)
+}
 
+function SubType (age) {
+  SuperType.call(this)
+  this.age = age
+}
+
+SuperType.prototype = new SuperType()
+
+// 原型式继承
 function create (obj) {
-    function F () {}
-    F.prototype = obj
-    return new F()
+  function Ctor () {}
+  Ctor.prototype = obj
+  return new Ctor()
 }
 
 
-/**
- * 寄生式继承
- */
-
+// 寄生式继承
 function create (obj) {
-    function F() {}
-    F.prototype = obj
-    return new F()
+  function Ctor () {}
+  Ctor.prototype = obj
+  return new Ctor()
 }
+
 function createAnother (obj) {
-    const clone = create(obj) // 通过调用构造函数创建一个新对象
-    clone.write = function () { // 以某种方式增强这个对象
-        console.log(1)
-    }
-    return clone // 返回这个对象
+  const clone = create(obj)
+  obj.say = function () {
+    console.log(1)
+  }
+  return clone
 }
-const person = {
-    name: 'lihong',
-    age: 33
+
+// 寄生式组合继承
+function create (obj) {
+  function Ctor () {}
+  Ctor.prototype = obj
+  return new Ctor()
 }
-const anotherPerson = createAnother(person)
 
+function inherit (son, father) {
+  const prototype = create(father.prototype)
+  son.prototype = prototype
+  prototype.constructor = son
+}
 
-/**
- * 寄生式组合继承
- */
- function create (obj) {
-    function F() {}
-    F.prototype = obj
-    return new F()
- }
+function SuperType () {
+  this.name = 'test'
+}
 
- function inherit (son, father) {
-    const prototype = create(father.prototype)
-    son.prototype = prototype
-    prototype.constructor = son
- }
+SuperType.prototype.sayName = function () {
+  console.log(this.name)
+}
 
- function People() {
-    this.organ = ['head', 'body', 'hand', 'leg']
- }
+function SubType (age) {
+  SuperType.call(this)
+  this.age = age
+}
 
- People.prototype.write = function () {
-    console.log(this.organ)
- }
+inherit(SubType, SuperType)
+// 这里必须要在inherit之后
+SubType.prototype.sayAge = function () {
+  console.log(this.age)
+}
 
- function Person (age) {
-    People.call(this)
-    this.age = age
- }
- 
- inherit (Person, People)
-
- Person.prototype.sayAge = function () {
-    console.log(this.age)
- }
-
- const person = new Person(18)
+const sub = new SubType(34)
