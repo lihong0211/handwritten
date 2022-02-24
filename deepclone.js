@@ -1,57 +1,31 @@
-const isObject = target => (target && typeof target === 'object') || typeof target === 'function'
 
-const canTraverse = type => ['Object', 'Array', 'Set', 'Map'].includes(type)
+function canTraverse (type) {
+  return ['Array', 'Object', 'Map', 'Set'].includes(type)
+}
+
+function getType (obj) {
+  return Object.prototype.toString.call(obj).slice(8, -1)
+}
+
+function isObject(obj) {
+  return obj && typeof obj === 'object' || typeof obj === 'function'
+}
 
 function handleCantTraverse (obj, type) {
   const Ctor = obj.constructor
-  switch(type) {
+  switch (type) {
     case 'Boolean':
       return new Object(Boolean.prototype.valueOf.call(obj))
-    case 'Number':
-      return new Object(Number.prototype.valueOf.call(obj))
     case 'String':
       return new Object(String.prototype.valueOf.call(obj))
+    case 'Number':
+      return new Object(Number.prototype.valueOf.call(obj))
     case 'Symbol':
-      return new Object(Symbol.prototype.valueOf.call(obj))
+      return new Object(Symbol.prototype.valueOf.call(this))
     case 'Function':
       return handleFn(obj)
-    default:
+    default: 
       return new Ctor(obj)
-  }
-}
-
-// 完整版深拷贝
-function deepClone (obj, map = new WeakMap()) {
-  if (!isObject(obj)) return obj
-  
-  const Ctor = obj.constructor
-  const type = Ctor.name
-
-  if (!canTraverse(type)) {
-    return handleCantTraverse(obj, type)
-  }
-
-  const clone = new Ctor()
-  if (map.get(obj)) return obj
-  map.set(obj, true)
-
-  if (type === 'Set') {
-    obj.forEach(item => {
-      clone.add(deepClone(item, map))
-    })
-  } else if (type === 'Map') {
-    obj.forEach((item, k) => {
-      console.log('k ==>', deepClone(k, map))
-      clone.set(deepClone(k, map), deepClone(item, map))
-    })
-    return clone
-  } else {
-    for (const k in obj) {
-      if (obj.hasOwnProperty(k)) {
-        clone[k] = deepClone(obj[k], map)
-      }
-    }
-    return clone
   }
 }
 
@@ -66,16 +40,49 @@ function handleFn (fn) {
   // ”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。
   // 预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，
   // 而不是从包含预查的字符之后开始。
-  const bodyReg = /(?<={)(.+|\n)+(?=})/
-  const paramReg = /(?<=\().+(?=\)\s+{)/m
-  const params = paramReg.exec(fn)
-  const body = bodyReg.exec(fn)
-  if (!body) return null
+  const paramReg = /(?<=\().+(?=\)\s+{)/
+  const bodyReg = /(?<={)(.+|\n)+(?=})/m
+  const str = fn.toString()
+  const params = paramReg.exec(str)
+  const body = bodyReg.exec(str)
   if (params) {
-    return new Function(...(params[0].split(',')), body[0])
+    return new Function(...params[0].split(','), body[0])
   } else {
     return new Function(body[0])
   }
+}
+
+function deepClone (obj, map = new WeakMap()) {
+  if (!isObject(obj)) return obj
+
+  const Ctor = obj.constructor
+  const type = getType(obj)
+
+  if (!(canTraverse(type))) {
+    return handleCantTraverse(obj, type)
+  }
+
+  const clone = new Ctor()
+  if (map.get(obj)) return obj
+  map.set(obj, true)
+
+  if (type === 'Set') {
+    obj.forEach(item => {
+      clone.add(deepClone(item))
+    })
+  } else if (type === 'Map') {
+    obj.forEach((k, v) => {
+      clone.set(deepClone(k, map), deepClone(v, map))
+    })
+  } else {
+    for (let k in obj) {
+      if (obj.hasOwnProperty(k)) {
+        console.log(k, deepClone(obj[k]))
+        clone[k] = deepClone(obj[k], map)
+      }
+    }
+  }
+  return clone
 }
 
 const a = {
@@ -101,4 +108,5 @@ const a = {
   o: new Boolean(false)
 }
 
-console.log(deepClone(a))
+const b = deepClone(a)
+console.log(b)
