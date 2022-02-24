@@ -1,6 +1,6 @@
-const PENDING_STATE = 'pending'
 const FULFILLED_STATE = 'fulfilled'
 const REJECTED_STATE = 'rejected'
+const PENDING_STATE = 'pending'
 
 const isObject = obj => Object.prototype.toString.call(obj).slice(8, -1) === 'Object'
 const isFunction = fn => typeof fn === 'function'
@@ -11,55 +11,55 @@ class Promise {
     this.bind()
     try {
       executor(this.resolve, this.reject)
-    } catch (e) {
+    } catch(e) {
       this.reject(e)
     }
   }
-  init () {
-    this.status = PENDING_STATE
-    this.reason = null
-    this.val = null
-    this.onFulfilledCallbacks = []
-    this.onRejectedCallbacks = []
-  }
-  
-  bind () {
-    this.resolve = this.resolve.bind(this)
-    this.reject = this.reject.bind(this)
-  }
 
-  resolve (val) {
-    if (this.status === PENDING_STATE) {
-      this.val = val
-      this.status = FULFILLED_STATE
+  resolve (value) {
+    if (this.state === PENDING_STATE) {
+      this.value = value
+      this.state = FULFILLED_STATE
       this.onFulfilledCallbacks.forEach(cb => cb())
     }
   }
 
   reject (reason) {
-    if (this.status = REJECTED_STATE) {
+    if (this.state === PENDING_STATE) {
       this.reason = reason
-      this.status = REJECTED_STATE
+      this.state = REJECTED_STATE
       this.onRejectedCallbacks.forEach(cb => cb())
     }
   }
 
-  processor (promise, x, resolve, reject) {
-    if (promise === x) {
-      reject(new TypeError('equal'))
-    }
+  init () {
+    this.state = PENDING_STATE
+    this.value = null
+    this.reason = null
+    this.onFulfilledCallbacks = []
+    this.onRejectedCallbacks = []
+  }
 
+  bind () {
+    this.resolve = this.resolve.bind(this)
+    this.reject = this.reject.bind(this)
+  }
+
+  processor (promise, x, resolve, reject) {
+    if (promise == x) {
+      reject(new TypeError('Chaining cycle detected for promise'));
+    }
     if (isObject(x) || isFunction(x)) {
       let called = false
       try {
-        let then = x.then
+        const then = x.then
         if (isFunction(then)) {
           then.call(
             x,
-            y => {
+            v => {
               if (called) return
               called = true
-              this.processor(promise, y, resolve, reject)
+              this.processor(promise, v, resolve, reject)
             },
             r => {
               if (called) return
@@ -85,12 +85,12 @@ class Promise {
   then (onFulfilled, onRejected) {
     onFulfilled = isFunction(onFulfilled) ? onFulfilled : val => val
     onRejected = isFunction(onRejected) ? onRejected : reason => { throw reason }
-    return new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const wrapOnFulfilled = () => {
         setTimeout(() => {
           try {
-            const x = onFulfilled(this.val)
-            this.processor(this, x, resolve, reject)
+            const value = onFulfilled(this.value)
+            this.processor(promise, value, resolve, reject)
           } catch (e) {
             reject(e)
           }
@@ -99,22 +99,24 @@ class Promise {
       const wrapOnRejected = () => {
         setTimeout(() => {
           try {
-            const x = onRejected(this.reason)
-            this.processor(this, x, resolve, reject)
+            const reason = onRejected(this.reason)
+            this.processor(promise, reason, resolve, reject)
           } catch (e) {
             reject(e)
           }
         })
       }
-      if (this.status === FULFILLED_STATE) {
+
+      if (this.state === FULFILLED_STATE) {
         wrapOnFulfilled()
-      } else if (this.status === REJECTED_STATE) {
+      } else if (this.state === REJECTED_STATE) {
         wrapOnRejected()
       } else {
         this.onFulfilledCallbacks.push(wrapOnFulfilled)
         this.onRejectedCallbacks.push(wrapOnRejected)
       }
     })
+    return promise
   }
 
   catch (cb) {
@@ -245,21 +247,6 @@ class Promise {
 
 }
 
-
-
-
-
-Promise.defer = Promise.deferred = function () {
-  let dfd = {}
-  dfd.promise = new Promise((resolve, reject) => {
-    dfd.resolve = resolve
-    dfd.reject = reject
-  })
-  return dfd
-}
-
-// module.exports = Promise
-
 async function testFinally () {
   const p = new Promise((resolve, reject) => {
    setTimeout(() => {
@@ -324,9 +311,9 @@ async function testRace () {
   console.log('race', res)
 }
 
-// testCatch()
-// testFinally()
-// testAll()
-// testAny()
+testCatch()
+testFinally()
+testAll()
+testAny()
 testRace()
 

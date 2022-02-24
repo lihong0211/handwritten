@@ -11,7 +11,7 @@ class Promise {
     this.bind()
     try {
       executor(this.resolve, this.reject)
-    } catch(e) {
+    } catch (e) {
       this.reject(e)
     }
   }
@@ -129,9 +129,9 @@ class Promise {
         cb()
         return res
       },
-      err => {
+      reason => {
         cb()
-        throw err
+        throw reason
       }
     )
   }
@@ -145,52 +145,53 @@ class Promise {
   }
 
   static reject (reason) {
-    return reason instanceof Promise
-      ? reason
-      : new Promise(null, reject => {
-        reject(reason)
-      })
+    return new Promise((resolve, reject) => {
+      reject(reason)
+    })
   }
-
+  
   static all (promises) {
     return new Promise((resolve, reject) => {
+      const res = []
       const len = promises.length
-      if (!len) resolve([])
       let resolved = 0
-      let result = []
-      for (let i = 0; i < promises.length; i++) {
+
+      for (let i = 0; i < len; i++) {
         promises[i].then(
-          res => {
-            result[i] = res
+          val => {
+            res.push(val)
             if (++resolved === len) {
-              resolve(result)
+              resolve(res)
             }
           },
-          err => {
-            reject(err)
+          reason => {
+            reject(reason)
           }
         )
       }
     })
   }
+
+  // 当任何一个被传入的 promise 成功的时候, 
+  // 无论其他的 promises 成功还是失败，此函数会将那个成功的 promise 作为返回值 
+  // 如果所有传入的 promises 都失败, Promise.any 将返回异步失败，和一个 AggregateError 对象，
+  // 它继承自 Error，有一个 error 属性，属性值是由所有失败值填充的数组。
 
   static any (promises) {
     return new Promise((resolve, reject) => {
       const len = promises.length
-      if (!len) resolve('')
       let rejected = 0
-      const result = []
+      let res = []
       for (let i = 0; i < len; i++) {
         promises[i].then(
-          res => {
-            resolve(res)
+          val => {
+            resolve(val)
           },
-          err => {
-            result[i] = err
+          reason => {
+            res.push(reason)
             if (++rejected === len) {
-              reject(new AggregateError([
-                new Error(result),
-              ], 'result'))
+              // ...
+              reject(new Error(res))
             }
           }
         )
@@ -198,58 +199,55 @@ class Promise {
     })
   }
 
+  // 一旦迭代器中的某个promise解决或拒绝，返回的 promise就会解决或拒绝。
   static race (promises) {
     return new Promise((resolve, reject) => {
-      const len = promises
+      const len = promises.length
       for (let i = 0; i < len; i++) {
         promises[i].then(
-          res => {
-            resolve(res)
+          val => {
+            resolve(val)
           },
-          err => {
-            reject(err)
+          reason => {
+            reject(reason)
           }
         )
       }
     })
   }
 
-  static allSetted (promises) {
+  // 方法返回一个在所有给定的promise都已经fulfilled或rejected后的promise，
+  // 并带有一个对象数组，每个对象表示对应的promise结果。status--value--reason
+  static allSettled (promises) {
     return new Promise((resolve, reject) => {
-      const len = promises
-      if (!len) resolve([])
+      const len = promises.length
       let resolved = 0
-      const result = []
+      const res = []
       for (let i = 0; i < len; i++) {
         promises[i].then(
-          res => {
-            result[i] = {
+          value => {
+            res[i] = {
               status: FULFILLED_STATE,
-              value: res
+              value
             }
             if (++resolved === len) {
-              resolve(result)
+              resolve(res)
             }
           },
-          err => {
-            result[i] = {
+          reason => {
+            res[i] = {
               status: REJECTED_STATE,
-              reason: err
+              reason
             }
             if (++resolved === len) {
-              resolve(result)
+              resolve(res)
             }
           }
         )
-      }      
+      }
     })
   }
-
 }
-
-
-
-
 
 Promise.defer = Promise.deferred = function () {
   let dfd = {}
@@ -261,4 +259,3 @@ Promise.defer = Promise.deferred = function () {
 }
 
 module.exports = Promise
-
