@@ -65,6 +65,7 @@ function throttle (fn, delay) {
 }
 
 // 立即执行--时间戳
+// 不适用于window.onscroll  连续滚动时now - prev 值很小
 function throttle (fn, delay) {
   let prev = 0
   return function () {

@@ -15,7 +15,9 @@ function flat (arr) {
 }
 // 递归
 function flat (arr) {
-  return arr.reduce((res, cur) => res.concat(Array.isArray(cur) ? flat(cur) : cur), [])
+  return arr.reduce((res, cur) => {
+    return res.concat(Array.isArray(cur) ? flat(cur) : cur)
+  },[])
 }
 
 a = [1, 2, [3, [4, 5]]]

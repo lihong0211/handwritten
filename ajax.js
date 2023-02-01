@@ -1,20 +1,19 @@
-function ajax ({
-  url = null,
+function ajax({
   method = 'GET',
-  responseType = 'text',
-  async = true
+  url = null,
+  responseType = 'json'
 }) {
   return new Promise((resolve, reject) => {
-    const XHR = XMLHttpRequest || ActiveXObject
-    const xhr = new XHR()
-
-    xhr.open(method, url, async)
+    const xhr = new XMLHttpRequest()
+    xhr.open(method, url)
     xhr.responseType = responseType
-    
+
     xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return
+
       if (/^[23]\d{2}$/.test(xhr.status)) {
-        resolve(xhr.responseText)
+        // console.log(xhr.response)
+        resolve(xhr.response)
       } else {
         reject(xhr.responseText)
       }

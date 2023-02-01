@@ -1,28 +1,29 @@
-Function.prototype.myCall = function () {
+Function.prototype.call = function () {
   const args = [...arguments]
   const ctx = args.shift()
 
   ctx.fn = this
-  const result = ctx.fn(...args)
+  const res = ctx.fn(...args)
+
   delete ctx.fn
-  return result
+  return res
 }
 
-Function.prototype.myApply = function () {
+Function.prototype.apply = function () {
   const args = [...arguments]
   const ctx = args.shift()
 
   ctx.fn = this
-  const result = ctx.fn(args)
+  const res = ctx.fn(args)
+
   delete ctx.fn
-  return result
+  return res
 }
 
-Function.prototype.myBind = function () {
+Function.prototype.bind = function () {
   const args = [...arguments]
   const ctx = args.shift()
   const _this = this
-  
   return function () {
     return _this.apply(ctx, args.concat([...arguments]))
   }

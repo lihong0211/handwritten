@@ -23,8 +23,10 @@
           item.target.src = item.target.dataset.src
           io.unobserve(item.target)
         }
-      })
-    })
+      })},{
+        threshold: 0
+      }
+    )
     const imgs = document.querySelectorAll('[data-src]')
     imgs.forEach(item => {
       io.observe(item)

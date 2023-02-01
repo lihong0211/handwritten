@@ -27,8 +27,8 @@ function curring (fn) {
   }
 }
 
-function add () {
+function sum () {
   return [].reduce.call(arguments, (res, cur) => res + cur)
 }
 
-curring(add, 2)(3,4)(5)
+curring(sum, 2)(3,4)(5)()

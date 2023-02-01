@@ -5,7 +5,7 @@ class EventBus {
 
   $on () {
     const [name, cb] = [...arguments]
-    if (name in this.pool) {
+    if (this.pool[name]) {
       this.pool[name].push(cb)
     } else {
       this.pool[name] = [cb]
@@ -14,18 +14,16 @@ class EventBus {
 
   $emit () {
     const [name, once, ...args] = [...arguments]
-    if (name in this.pool) {
-      this.pool[name].slice().forEach(cb => {
-        cb(...args)
-      })
-    }
-    if (once) {
-      delete this.pool[name]
-    }
+    if (!this.pool[name]) return
+    this.pool[name].slice().forEach(cb => {
+      cb(...args)
+    })
+    if (once) delete this.pool[name]
   }
 
   $destroy () {
     const [name, fn] = [...arguments]
+    if (!this.pool[name]) return
     if (fn) {
       this.pool[name] = this.pool[name].filter(cb => cb !== fn)
     } else {
@@ -34,15 +32,16 @@ class EventBus {
   }
 }
 
-const eventBus = new EventBus()
+const bus = new EventBus()
 const fn1 = function (name, age) {
-  console.log(`${name} ${age}`)
+  console.log(`fn1  ${name} ${age}`)
 }
 const fn2 = function (name, age) {
-  console.log(`hello, ${name} ${age}`)
+  console.log(`fn2  hello, ${name} ${age}`)
 }
-eventBus.$on('aaa', fn1)
-eventBus.$on('aaa', fn2)
-eventBus.$emit('aaa', false, '布兰', 12)
-eventBus.$destroy('aaa', fn1)
-eventBus.$emit('aaa', true, '布兰', 12)
+bus.$on('aaa', fn1)
+bus.$on('aaa', fn2)
+bus.$emit('aaa', false, '布兰', 12)
+bus.$emit('bbb')
+bus.$destroy('aaa', fn1)
+bus.$emit('aaa', true, '布兰', 12)

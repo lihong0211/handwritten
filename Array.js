@@ -2,7 +2,7 @@
 
 function checkType (name, cb) {
   if (this === null || this === undefined) {
-    throw new TypeError(`Cannot read properties of ${this} (reading '${name}')`)
+    throw new TypeError(`this is not an array`)
   }
   if (typeof cb !== 'function') {
     throw new TypeError(cb + 'is not a function')
@@ -38,21 +38,23 @@ Array.prototype.reduce = function (cb) {
   checkType('reduce', cb)
 
   const arr = this
-  const len = arr.length
+  const len = arr.length || 0
   const initalVal = arguments[1]
   let res
   let i = 0
-  if (initalVal === undefined) {
+
+  if (initalVal !== undefined) {
+    res = initalVal
+  } else {
     if (!len) return new Error('arr.length === 0 need inital val')
     res = arr[0]
     i++
-  } else {
-    res = initalVal
   }
 
   for (; i < len; i++) {
-    res += cb.call(initalVal, arr[i], i, arr)
+    res = cb.call(null, res, arr[i], i, arr)
   }
+
   return res
 }
 
@@ -68,6 +70,7 @@ Array.prototype.filter = function (cb) {
       res.push(arr[i])
     }
   }
+  
   return res
 }
 
@@ -76,14 +79,12 @@ Array.prototype.some = function (cb) {
 
   const arr = this
   const len = arr.length || 0
-  let res = false
 
   for (let i = 0; i < len; i++) {
-    if (cb.call(arguments[1], arr[i], i, arr)) {
-      return true
-    }
+    if (cb.call(arguments[1], arr[i], i, arr)) return true
   }
-  return res
+
+  return false
 }
 
 Array.prototype.every = function (cb) {
@@ -91,14 +92,12 @@ Array.prototype.every = function (cb) {
 
   const arr = this
   const len = arr.length || 0
-  let res = true
 
   for (let i = 0; i < len; i++) {
-    if (!cb.call(arguments[1], arr[i], i, arr)){
-      return false
-    }
+    if (!cb.call(arguments[1], arr[i], i, arr)) return false
   }
-  return res
+
+  return true
 }
 
 Array.prototype.find = function (cb) {
@@ -108,10 +107,9 @@ Array.prototype.find = function (cb) {
   const len = arr.length || 0
 
   for (let i = 0; i < len; i++) {
-    if (cb.call(arguments[1], arr[i], i, arr)){
-      return arr[i]
-    }
+    if (cb.call(null, arr[i], i, arr)) return arr[i]
   }
+
   return undefined
 }
 
@@ -122,11 +120,10 @@ Array.prototype.findIndex = function (cb) {
   const len = arr.length || 0
 
   for (let i = 0; i < len; i++) {
-    if (cb.call(arguments[1], arr[i], i, arr)){
-      return i
-    }
+    if (cb.call(null, arr[i], i, arr)) return i
   }
-  return -1
+
+  return  -1
 }
 
 Array.prototype.indexOf = function (val) {
@@ -151,7 +148,7 @@ console.log('every', a.every(item => item > 1))
 console.log('find', a.find(item => item > 3))
 console.log('findIndex', a.findIndex(item => item > 3))
 
-reduce = a.reduce((item, index, array) => {
-  return item * array[index]
+reduce = a.reduce((acc, item, index, array) => {
+  return acc + item
 }, 100)
 console.log(reduce)
