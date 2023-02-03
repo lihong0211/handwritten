@@ -1,32 +1,28 @@
+
 function uniq (arr) {
-  const temp = []
+  return [... new Set(arr)]
+}
+
+function uniq (arr) {
+  return arr.filter((item, index, arr) => index === arr.indexOf(item))
+}
+
+function uniq (arr) {
+  const res = []
   arr.forEach(item => {
-    if (!temp.includes(item)) {
-      temp.push(item)
-    }
+    if (res.includes(item)) return
+    res.push(item)
   })
-  return temp
-}
-
-function uniq (arr) {
-  return [...new Set(arr)]
-}
-
-function uniq (arr) {
-  return arr.filter((item, index, array) => {
-    return index === array.indexOf(item)
-  }) 
+  return res
 }
 
 function uniq (arr) {
   const hash = {}
-  const len = arr.length
   const res = []
-  for (let i = 0; i < len; i++) {
-    if (!(arr[i] in hash)) {
-      res.push(arr[i])
-      hash[arr[i]] = arr[i]
-    }
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] in hash) continue
+    res.push(arr[i])
+    hash[arr[i]] = arr[i]
   }
   return res
 }

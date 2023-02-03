@@ -1,162 +1,103 @@
+class LinkListNode {
+  constructor (key = null, val = null) {
+    this.key = key
+    this.val = val
+    this.prev = null
+    this.next = null
+  }
+}
+
 class Map {
   constructor () {
-    this.items = {}
-    this.size = 0
-    this.orderHash = {}
-    this.order = 0
+    this.init()
   }
-
-  set (key, val) {
-    if (!this.has(key)){
-      this.items[key] = val
-      this.size++
-      this.orderHash[this.order++] = key
-    } else {
-      this.items[key] = val
-    }
+  
+  init () {
+    this.hash = {}
+    this.size = 0
+    this.head = new LinkListNode()
+    this.tail = new LinkListNode()
+    this.head.next = this.tail
+    this.tail.prev = this.head
   }
 
   get (key) {
-    return this.items[key]
+    return this.hash[key] ? this.hash[key].val : undefined
   }
 
-  has (key) {
-    return key in this.items
-  }
-
-  clear () {
-    this.items = {}
-    this.size = 0
-    this.orderHash = {}
-    this.order = 0
+  set (key, val) {
+    if (this.hash[key]) {
+      this.hash[key].val = val
+    } else {
+      const node = new LinkListNode(key, val)
+      const prev = this.tail.prev
+      prev.next = node
+      node.prev = prev
+      node.next = this.tail
+      this.tail.prev = node
+      this.hash[key] = node
+      this.size++
+    }
   }
 
   delete (key) {
-    if (!this.has(key)) return
-    delete this.items[key]
-    // 为了保证迭代的顺序 这里只能采用O(n)的方法
-    for (let i = 1; i < this.order; i++) {
-      if (this.orderHash[i] === key){
-        delete this.orderHash[i]
-      }
-    }
+    const node = this.hash[key]
+    if (!node) return
+
+    const prev = node.prev
+    const next = node.next
+    prev.next = next
+    next.prev = prev
+
+    delete this.hash[key]
     this.size--
   }
 
-  entries () {
-    let count = 0
-    let entiesOrder = 0
-    const { orderHash, order, size, items } = this
-    // 闭包当前状态  执行clear再添加会根据新的数据生成迭代器
-    function next () {
-      while(!orderHash.hasOwnProperty(entiesOrder) && entiesOrder <= order) {
-        entiesOrder++
-      }
-      if (++count <= size + 1) {
-        const key = orderHash[entiesOrder]
-        const val = items[key]
-        entiesOrder++
-        return {
-          value: [key, val]
-        }
-      }
-    }
-    return {
-      next
-    }
+  has (key) {
+    return key in this.hash
+  }
+
+  clear () {
+    this.init()
   }
 
   forEach (cb) {
-    for (let i = 0; i < this.order; i++) {
-      if (this.orderHash.hasOwnProperty(i)) {
-        cb.call(arguments[1], this.orderHash[i], this.orderHash[i])
-      }
+    let linkList = this.head.next
+    while (linkList.next) {
+      cb.call(null, linkList.key, linkList.val)
+      linkList = linkList.next
     }
+  }
+
+  entries () {
+    return this.iterator('entries')
   }
 
   keys () {
-    let count = 0
-    let valuesOrder = 0
-    const { orderHash, order, size } = this
-    function next () {
-      while(!orderHash.hasOwnProperty(valuesOrder) && valuesOrder <= order) {
-        valuesOrder++
-      }
-      if (++count <= size + 1) {
-        const key = orderHash[valuesOrder]
-        valuesOrder++
-        return {
-          value: key
-        }
-      }
-    }
-    return {
-      next
-    }
+    return this.iterator('keys')
   }
 
   values () {
-    let count = 0
-    let valuesOrder = 0
-    const { orderHash, order, size, items } = this
+    return this.iterator('values')
+  }
+
+  iterator (type) {
+    let linkList = this.head.next
     function next () {
-      while(!orderHash.hasOwnProperty(valuesOrder) && valuesOrder <= order) {
-        valuesOrder++
-      }
-      if (++count <= size + 1) {
-        const val = items[orderHash[valuesOrder]]
-        valuesOrder++
+      if (linkList) {
+        const key = linkList.key
+        const val = linkList.val
+        const done = linkList.next === null
+        const value = type === 'keys' ? key
+          : type === 'values' ? val 
+          : [key, val]
+        linkList = linkList.next
         return {
-          value: val
+          done,
+          value: done ? undefined : value
         }
       }
     }
-    return {
-      next
-    }
+    return { next }
   }
-
 }
-
-const map = new Map()
-
-map.set(8, '8')
-map.set(11, '11')
-map.set(3, '3')
-map.set('test', 3)
-map.delete(3)
-map.set(2, '2')
-map.forEach((k, v) => {
-  console.log(k, v)
-})
-map.set('test1', 10)
-map.delete(2)
-
-const entries = map.entries()
-console.log('entries', entries.next().value)
-// console.log('entries', entries.next().value)
-// console.log('entries', entries.next().value)
-// console.log('entries', entries.next().value)
-
-const values = map.values()
-console.log('values', values.next().value)
-// console.log('values', values.next().value)
-// console.log('values', values.next().value)
-// console.log('values', values.next().value)
-
-map.clear()
-map.set(1, '1')
-map.set(2, '2')
-map.set(3, '3')
-
-const values1 = map.values()
-
-console.log('values1', values1.next().value)
-console.log('values1', values1.next().value)
-console.log('values1', values1.next().value)
-
-console.log(map.size)
-
-const keys = map.keys()
-console.log('keys', keys.next().value)
-

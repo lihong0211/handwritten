@@ -20,5 +20,9 @@ function flat (arr) {
   },[])
 }
 
-a = [1, 2, [3, [4, 5]]]
-b = [].concat(...a) // [1, 2, 3, [4, 5]] 展开符会把里面的元素也展开一层
+function flat (arr) {
+  return arr.flat(Infinity)
+}
+
+arr = [1, 2, [3, 4, [5, 6, 7, [90,100]]]]
+console.log(flat(arr))
